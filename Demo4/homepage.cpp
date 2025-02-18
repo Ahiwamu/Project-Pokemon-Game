@@ -20,7 +20,9 @@ int main()
 
         if(toupper(who) == 'C'){
             int dead = 0;
+            consecutiveHeads = 0;
             p2.comchoosepokemon();
+            p2.comchooseskill();
             while(true)
             {
            
@@ -30,22 +32,37 @@ int main()
                     p1.showstat(0, 1);
                     p2.showstat(0, 2);
 
-                    cout << "[1] Attack [2] Strike [3] Defend [4] counter [5] skill [6] swap" << endl;
-                    cout << "Player'1 Choice : ";
-                    cin >> p1.playerAction;
-                    if (cin.fail() || p1.playerAction < 1 || p1.playerAction > 6) {
+                    if(p1.myteam[0].sleep == true){
+                        cout << "can do nothing......." << endl;
+                        p1.playerAction = 0;
+                        break;
+                      
+                    }else{
+                        cout << "[1] Attack [2] Strike [3] Defend [4] counter [5] skill [6] swap" << endl;
+                        cout << "Player'1 Choice : ";
+                        cin >> p1.playerAction;
+                        if (cin.fail() || p1.playerAction < 1 || p1.playerAction > 6) {
                         cin.clear(); 
                         cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                         cout << "Invalid input. Please choose again." << endl;
-                    } else {
-                        break;
-                    }
-                
+                        } else {
+                            break;
+                        }
+                    } 
                 }
+                p1.myteam[0].sleep = false;
                 int action1 = p1.playerAction;
                 delaySeconds(0.5);
-                p2.playerAction = randomnumber(4) + 1;
-                cout << "Player'2 Choice : " << p2.playerAction << endl;
+
+                if(p2.myteam[0].sleep == true){
+                    p2.playerAction = 0;
+                    break;
+
+                }else{
+                    p2.playerAction = randomnumber(5) + 1;
+                    cout << "Player'2 Choice : " << p2.playerAction << endl;
+                }
+                p2.myteam[0].sleep = false;
                 int action2 = p2.playerAction;
             
                 cout << "===========================================================================================================" << endl;
@@ -53,7 +70,7 @@ int main()
                 cout << "===========================================================================================================" << endl;
                 cout << endl;
 
-               
+        
                 if(p2.isDead(0)){
                     dead += 1;
                 }
@@ -119,70 +136,80 @@ int main()
             p2.createplayer("p2");
             showpokemon();
             p2.choosepokemon(2);
+            showskill();
+            p2.chooseskill(1);
 
            
             while(true){
-                delaySeconds(1);
-                p1.showstat(0, 1);
-                p2.showstat(0, 2);
-                cout << "----------------------------------" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|         player1' turn_         |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "----------------------------------" << endl;
+                
                 while(true){
-                    cout << "[1] Attack [2] Strike [3] Defend [4] counter [5] skill [6] swap" << endl;
-                    cout << "Player'1 Choice : ";
-                    cin >> p1.playerAction;
-                    if (cin.fail() || p1.playerAction < 1 || p1.playerAction > 6) {
+                    delaySeconds(1);
+                    p1.showstat(0, 1);
+                    p2.showstat(0, 2);
+
+                    if(p1.myteam[0].sleep == true){
+                        cout << "===========================================================================" << endl;
+                        for(int i = 0; i < 3; i++) cout << endl;
+                        cout << "                                 player1'sturn" << endl;
+                        for(int i = 0; i < 3; i++) cout << endl;
+                        cout << "===========================================================================" << endl;
+                        cout << "can do nothing......." << endl;
+                        p1.playerAction = 0;
+                        break;
+
+                    }else{
+                        cout << "===========================================================================" << endl;
+                            for(int i = 0; i < 3; i++) cout << endl;
+                            cout << "                                 player1'sturn" << endl;
+                            for(int i = 0; i < 3; i++) cout << endl;
+                            cout << "===========================================================================" << endl;
+                        cout << "[1] Attack [2] Strike [3] Defend [4] counter [5] skill [6] swap" << endl;
+                        cout << "Player'1 Choice : ";
+                        cin >> p1.playerAction;
+                        if (cin.fail() || p1.playerAction < 1 || p1.playerAction > 6) {
                         cin.clear(); 
                         cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                         cout << "Invalid input. Please choose again." << endl;
-                    } else {
-                        break;
-                    }
+                        } else {
+                            break;
+                        }
+                    } 
                 }
+                    p1.myteam[0].sleep = false;
                     int action1 = p1.playerAction;
         
-                    
-                cout << "----------------------------------" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|         player2' turn_         |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "|                                |" << endl;
-                cout << "----------------------------------" << endl;
-                while(true){
-                    cout << "[1] Attack [2] Strike [3] Defend [4] counter [5] skill [6] swap" << endl;
-                    cout << "Player'2 Choice : ";
-                    cin >> p2.playerAction;
-                    if (cin.fail() || p2.playerAction < 1 || p2.playerAction > 6) {
-                        cin.clear(); 
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
-                        cout << "Invalid input. Please choose again." << endl;
-                    } else {
-                        break;
+
+                    while(true){
+                        if(p2.myteam[0].sleep == true){
+                            cout << "===========================================================================" << endl;
+                            for(int i = 0; i < 3; i++) cout << endl;
+                            cout << "                                 player2'turn" << endl;
+                            for(int i = 0; i < 3; i++) cout << endl;
+                            cout << "===========================================================================" << endl;
+                            cout << "can do nothing......." << endl;
+                            p2.playerAction = 0;
+                            break;
+                            
+                        }else{
+                            cout << "===========================================================================" << endl;
+                            for(int i = 0; i < 3; i++) cout << endl;
+                            cout << "                                 player2'turn" << endl;
+                            for(int i = 0; i < 3; i++) cout << endl;
+                            cout << "===========================================================================" << endl;
+                            cout << "[1] Attack [2] Strike [3] Defend [4] counter [5] skill [6] swap" << endl;
+                            cout << "Player'1 Choice : ";
+                            cin >> p2.playerAction;
+                            if (cin.fail() || p2.playerAction < 1 || p2.playerAction > 6) {
+                            cin.clear(); 
+                            cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+                            cout << "Invalid input. Please choose again." << endl;
+                            } else {
+                                break;
+                            }
+                        } 
                     }
-                }
-                int action2 = p2.playerAction;
+                    p2.myteam[0].sleep = false;
+                    int action2 = p2.playerAction;
                 
                 cout << "===========================================================================================================" << endl;
                 drawscene(action1, p1, action2, p2);
