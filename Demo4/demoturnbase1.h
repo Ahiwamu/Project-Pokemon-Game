@@ -9,6 +9,7 @@
 #include<iomanip>
 #include <algorithm> // ใช้ ตรวจสอบค่าใน array
 #include <set>
+#include <conio.h>
 
 using namespace std;
 
@@ -31,13 +32,14 @@ void win(int p);
 string namepokemon[6] = {"Arthur Morgan", "Boudica", "Caesar", "Darius", "Edward the Black Prince", "Frederick the Great"};                //ชื่อ
 double hppokemon[6] = {100.0, 100.0, 150.0, 150.0, 200.0, 200.0}; 
 double hpmaxpokemon[6] = {100.0, 100.0, 150.0, 150.0, 200.0, 200.0};  //รอแก้ไขให้สมดุล
-double defpokemon[6] = {20.0, 20.0, 40.0, 40.0, 70.0, 70.0};        //รอแก้ไขให้สมดุล
+double defpokemon[6] = {20.0, 20.0, 40.0, 40.0, 50.0, 50.0};        //รอแก้ไขให้สมดุล
 double atkpokemon[6] = {50.0, 50.0, 30.0, 30.0, 20.0, 20.0};        //รอแก้ไขให้สมดุล
-double spdpokemon[6] = {20.0, 20.0, 5.0, 5.0, 1.0, 1.0};    
+double spdpokemon[6] = {20.0, 10.0, 5.0, 15.0, 1.0, 25.0};    
 string elementpokemon[4] = {"Earth", "Water", "Wind", "Fire"}; 
 string pokemonskill[6] = {"heal", "piercing", "poison", "tossCoin", "sleep", "transfer"};
 string skillinfo[6] = {"\nsuccess rate is 1/4\nrecover hp equal 1/2 of maxhp.\n", "\nattack and strike ignore defend for 3 turn.\n", "\nopponent take damage 10% of maxhp for 3 turn.\n", "\nyou have to toss coin\nrate 1/2 for each turn\nyou need to Flip heads 3 times in a row for defeat opponent.\n", "\nsucess rate is 1/3\nopponent can't action 1 turn.\n", "\nsucess rate is 1/5\nSwap HP with the opponent.\n"};
 int choices[4] = {1, 2, 3, 4}; //1 = ตีปกติ, 2 = strike, 3 = ป้องกัน, 4 = counter
+int consecutiveHeads = 0;
 
 
 class pokemon
@@ -49,6 +51,7 @@ class pokemon
         double def;   //รอแก้ไขให้สมดุล
         double atk;  //รอแก้ไขให้สมดุล
         double spd;
+        bool sleep = false;
         string element;
     
         friend class player;
@@ -58,10 +61,10 @@ class player
 {
     string type;
     string name;
-    vector<pokemon> myteam;
-    vector<string> skill;
     
     public:
+        vector<pokemon> myteam;
+        vector<string> skill;
         string nameplayer;                //ชื่อ
         int playerAction;
         double takeNomalATK(int n, player &opp);
@@ -73,7 +76,8 @@ class player
         void choosepokemon(int n);
         void chooseskill(int n);
         void comchoosepokemon();
-        void skillattack(string n);
+        void comchooseskill();
+        void beskillattack(string n);
         bool isDead(int n);
         void showstat(int n, int who);
         double checkspd(int n);
@@ -90,6 +94,7 @@ void player::showPK(){
         cout << "DEF : " << myteam[i].def << endl;
         cout << "ATK : " << myteam[i].atk << endl;
         cout << "SPD : " << myteam[i].spd << endl;
+        cout << "SKILL : " << skill[i] << endl;
         cout << "-------------------------" << endl;
         delaySeconds(0.5);
     }
@@ -114,6 +119,7 @@ void player::swappokemon() {
        
         if (order == 2 && myteam[1].hp != 0) {
             swap(myteam[0], myteam[1]);
+            swap(skill[0], skill[1]);
             cout << "-------------------------\n";
             cout << myteam[0].namepokemon << " I choose you!!!\n";
             cout << "-------------------------\n";
@@ -121,6 +127,7 @@ void player::swappokemon() {
         }
         else if (order == 3 && myteam[2].hp != 0) {
             swap(myteam[0], myteam[2]);
+            swap(skill[0], skill[2]);
             cout << "-------------------------\n";
             cout << myteam[0].namepokemon << " I choose you!!!\n";
             cout << "-------------------------\n";
@@ -132,18 +139,37 @@ void player::swappokemon() {
     }
 }
 
-//double player::skillattack(string skill){
-    //if(skill == "tossCoin"){
-       
-   // }
-//}
+void player::beskillattack(string skill){
+    if(skill == "tossCoin"){
+        int flip = rand() % 2;
+        if(consecutiveHeads == 3) consecutiveHeads = 0;
+        if (flip == 1) {
+            consecutiveHeads++;
+        } else {
+            consecutiveHeads = 0; // รีเซ็ตถ้าออกก้อย
+        }
+        cout<<"  death count : "<<consecutiveHeads;
+        if(consecutiveHeads == 3) myteam[0].hp = 0;
+    }else if(skill == "sleep"){
+        int sucess = rand() % 4;
+        if(sucess == 3) {
+            myteam[0].sleep = true;
+            cout<<" Effect : [Sucess]"; 
+        }else{
+            cout<<" Effect : [nothing]";
+        } 
+    }else if(skill == "transfer"){
+        myteam[0].hp = 1;
+    }
+}
 
 void player::comswap(int n){
     swap(myteam[0], myteam[n]);
+    swap(skill[0], skill[n]);
 }
 
 double player::takeNomalATK(int n, player &opp){
-    double damage = (myteam[n].atk*(1-(opp.myteam[n].def/100)));
+    double damage = (myteam[n].atk*abs(1-abs(opp.myteam[n].def/100)));
     opp.myteam[n].hp -= damage;
     if(opp.myteam[n].hp <= 0){opp.myteam[n].hp = 0;}
 
@@ -196,7 +222,7 @@ void player::chooseskill(int n){
             }
         }
 
-        skill.push_back(pokemonskill[input]);
+        skill.push_back(pokemonskill[input-1]);
     }
 }
 
@@ -278,6 +304,19 @@ void player::comchoosepokemon() {
     }
 }
 
+void player::comchooseskill() {
+    set<int> selectedIndices; // ใช้ set ป้องกันค่าซ้ำ
+    srand(time(0)); // ตั้งค่า seed สำหรับ rand()
+
+    cout << "Computer is selecting Skill...\n";
+    while (selectedIndices.size() < 3) {
+        int randIndex = rand() % 5; // สุ่มค่า 0-4
+        if (selectedIndices.insert(randIndex).second) { // ถ้าค่าไม่ซ้ำ ให้เพิ่ม
+            skill.push_back(pokemonskill[randIndex]);
+        }
+    }
+}
+
 bool player::isDead(int n){
     if(myteam[n].hp <= 0) return true;
     else return false;
@@ -308,6 +347,9 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
     bool checkdef1 = false;
     bool checkdef2 = false;
 
+        if(p1 == 0){
+            cout << "Player 1 Sleep!!!!!";
+        }
         if(p1 == 1){
             cout << "Player 1 Attack!!!!!";
             double damage = p_1.takeNomalATK(0, p_2);
@@ -334,8 +376,25 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
                 cout << "\t\t" << setw(2) << damage << " Damage";
             }
         }
+        if(p1 == 5){
+            cout << "Player 1 Skill Attack!!!!!";
+            if(p_1.skill[0] == "transfer"){
+                if(p_1.myteam[0].hp<=20){
+                    p_2.beskillattack(p_1.skill[0]);
+                    p_1.myteam[0].hp = 0;
+                }else{
+                    cout<<"  Conditions met, Please try again.";
+                }
+            }else{
+                p_2.beskillattack(p_1.skill[0]); 
+            }
+        }
         if(p1 == 6){
+            cout << "Player 1 run!!!!!";
             p_1.swappokemon();
+        }
+        if(p2 == 0){
+            cout << "\t\t\t\tPlayer 2 Sleep!!!!!";
         }
         if(p2 == 1){
             cout << "\t\t\t\tPlayer 2 Attack!!!!!";
@@ -364,7 +423,21 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
                 cout << "\t\t" << setw(2) << damage << " Damage";
             }
         }
+        if(p2 == 5){
+            cout << "\t\t\t\tPlayer 2 Skill Attack!!!!!";
+            if(p_2.skill[0] == "transfer"){
+                if(p_2.myteam[0].hp<=20){
+                    p_1.beskillattack(p_2.skill[0]);
+                    p_2.myteam[0].hp = 0;
+                }else{
+                    cout<<"  Conditions met, Please try again.";
+                }
+            }else{
+                p_1.beskillattack(p_2.skill[0]); 
+            }
+        }
         if(p2 == 6){
+            cout << "\t\t\t\tPlayer 2 run!!!!!";
             p_2.swappokemon();
         }
         if(checkdef1){
@@ -456,8 +529,8 @@ int randomnumber(int n){        //ฟังชั่นสุ่ม
 
 int comChoice()
 {
-	int choices[] = {1, 2, 3, 4};
-	return choices[rand()%4];
+	int choices[] = {1, 2, 3, 4, 5};
+	return choices[rand()%5];
 }
 
 void showpokemon(){
@@ -484,7 +557,7 @@ void showskill(){
     cin.ignore(1000, '\n'); 
     for(int i = 0; i < 6; i++){
         cout << "-------------------------" << endl;
-        cout <<"<<<"<< pokemonskill[i]<<">>> :";
+        cout << pokemonskill[i]<<" ["<<i+1<<"] :";
         cout << skillinfo[i];
         cout << "-------------------------" << endl;
         if(i != 5){
