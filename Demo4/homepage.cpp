@@ -54,14 +54,18 @@ int main()
                 int action1 = p1.playerAction;
                 delaySeconds(0.5);
 
-                if(p2.myteam[0].sleep == true){
-                    p2.playerAction = 0;
-                    break;
+                while(true){
+                    if(p2.myteam[0].sleep == true){
+                        p2.playerAction = 0;
+                        break;
 
-                }else{
-                    p2.playerAction = randomnumber(5) + 1;
-                    cout << "Player'2 Choice : " << p2.playerAction << endl;
+                    }else{
+                        p2.playerAction = randomnumber(5) + 1;
+                        cout << "Player'2 Choice : " << p2.playerAction << endl;
+                        break;
+                    }
                 }
+
                 p2.myteam[0].sleep = false;
                 int action2 = p2.playerAction;
             
