@@ -9,6 +9,7 @@
 #include<iomanip>
 #include <algorithm> // ใช้ ตรวจสอบค่าใน array
 #include <set>
+#include <bits/stdc++.h>
 
 using namespace std;
 
@@ -61,14 +62,14 @@ class player
     string name;
     vector<pokemon> myteam;
     vector<string> skill;
-    int muramasa = 0;
-    int poinson = 0;
     
     public:
+        int muramasa = 0;
+        int poinson = 0;
         string nameplayer;                //ชื่อ
         int playerAction;
-        double takeNormalATK(int n, player &opp);
-        double takeStrike(int n, player &opp);
+        double takeNormalATK(int n, player &opp, double winelement);
+        double takeStrike(int n, player &opp, double winelement);
         void def(int n);
         void undef(int n);
         int evade();
@@ -84,7 +85,7 @@ class player
         void comswap(int n);
         void showPK();
 
-        int checkelement(); //เช็คธาตุ
+        int checkelement(int n); //เช็คธาตุ
         bool checkdodge();  //เช็คหลบหลีก
         int checkskill(int n);  //เช็คskill
         
@@ -92,7 +93,7 @@ class player
         int skill_2muramasa();
         int skill_3poinson();
 
-        void takepoinson(int n, player &opp);
+        double takepoinson(int n, player &opp);
 };
 
 void player::showPK(){
@@ -174,7 +175,7 @@ double player::takeNormalATK(int n, player &opp, double winelement){
 }
 
 //เพิ่ม ตัวคูณชนะธาตุ ในฟังก์ชัน takestrike
-double player::takeStrike(int n, player &opp){
+double player::takeStrike(int n, player &opp, double winelement){
     double realoppdef = opp.myteam[n].def;
 
     if(muramasa >= 1 && muramasa <= 3){
@@ -296,15 +297,15 @@ void player::comchoosepokemon() {
 
     cout << "Computer is selecting Pokémon...\n";
     while (selectedIndices.size() < 3) {
-        int randIndex = rand() % 5; // สุ่มค่า 0-4
+        int randIndex = rand() % 6; // สุ่มค่า 0-5
         if (selectedIndices.insert(randIndex).second) { // ถ้าค่าไม่ซ้ำ ให้เพิ่ม
             pokemon unit;
-            unit.namepokemon = namepokemon[randIndex+1];
-            unit.atk = atkpokemon[randIndex+1];
-            unit.hp = hppokemon[randIndex+1];
-            unit.hpmax = hpmaxpokemon[randIndex+1];
-            unit.def = defpokemon[randIndex+1];
-            unit.spd = spdpokemon[randIndex+1];
+            unit.namepokemon = namepokemon[randIndex];
+            unit.atk = atkpokemon[randIndex];
+            unit.hp = hppokemon[randIndex];
+            unit.hpmax = hpmaxpokemon[randIndex];
+            unit.def = defpokemon[randIndex];
+            unit.spd = spdpokemon[randIndex];
             unit.element = elementpokemon[rand() % 4];
 
             myteam.push_back(unit);
@@ -340,9 +341,12 @@ double player::checkspd(int n){
 }
 
 //สร้างฟังก์ชันเช็ค ธาตุ
-int player::checkelement()
+int player::checkelement(int n)
 {
-    string strele = strings.ToLower(elementpokemon);
+    string strele = myteam[n].element;
+    for(int i = 0; i < myteam[n].element.size(); i++){
+        strele[i] = tolower(myteam[n].element[i]);
+    }
     int ele = 0;
     if(strele == "earth") ele = 1;
     if(strele == "water") ele = 2;
@@ -405,8 +409,8 @@ double player::takepoinson(int n, player &opp){
 void drawscene(int p1, player &p_1, int p2, player &p_2){
     bool checkdef1 = false;
     bool checkdef2 = false;
-    int elementplayer1 = p_1.checkelement();
-    int elementplayer2 = p_2.checkelement();
+    int elementplayer1 = p_1.checkelement(0);
+    int elementplayer2 = p_2.checkelement(0);
 
     double winelement1 = 1.0;
     double winelement2 = 1.0;
@@ -499,9 +503,11 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
         }
         if(skill1 == 2){
             p_1.muramasa = p_1.skill_2muramasa();
+            cout << "\t\t" << "Muramasa!!!!!";
         }
         if(skill1 == 3){
             p_1.poinson = p_1.skill_3poinson();
+            cout << "\t\t" << "Poinsoned!!!!!";
         }
     }
     if(p1 == 6){
@@ -552,10 +558,10 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
     }
     // เพิ่มกรณี กดskill
     if(p2 == 5){
-        int skill2 = p2.checkskill(0);
+        int skill2 = p_2.checkskill(0);
         cout << "\t\t\t\tPlayer 2 Skill!!!!!";
-        if(skill1 == 1){
-            double heal = p2.skill_1heal(0);
+        if(skill2 == 1){
+            double heal = p_2.skill_1heal(0);
             if(heal == 0.0){
                 cout << "\t\t" << "Fail!!!!!";
             }
@@ -565,9 +571,11 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
         }
         if(skill2 == 2){
             p_2.muramasa = p_2.skill_2muramasa();
+            cout << "\t\t" << "Muramasa!!!!!";
         }
         if(skill2 == 3){
             p_2.poinson = p_2.skill_3poinson();
+            cout << "\t\t" << "Poinsoned!!!!!";
         }
     }
     if(p2 == 6){
