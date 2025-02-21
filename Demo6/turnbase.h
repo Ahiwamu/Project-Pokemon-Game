@@ -68,6 +68,8 @@ class player
     vector<string> skill;
     
     public:
+        bool checkpiercing = false;
+        bool checkpoinson = false;
         int muramasa = 0;
         int poinson = 0;
         string nameplayer;                //ชื่อ
@@ -171,6 +173,7 @@ double player::takeNormalATK(int n, player &opp, double winelement){
     }
     if(muramasa > 3){
         muramasa = 0;
+        checkpiercing = false;
     }
 
     double damage = (myteam[n].atk*winelement*(1-(realoppdef/100)));
@@ -189,6 +192,7 @@ double player::takeStrike(int n, player &opp, double winelement){
     }
     if(muramasa > 3){
         muramasa = 0;
+        checkpiercing = false;
     }
 
     double skATK = myteam[n].atk + (abs(opp.myteam[n].spd - myteam[n].spd)*10);
@@ -363,12 +367,14 @@ double player::skill_1heal(int n){
 //เริ่ม ใช้ skill2 defend = 0
 int player::skill_2muramasa(){
     muramasa = 1;
+    checkpiercing = true;
     return muramasa;
 }
 
 //เริ่ม ใช้ skill3 ติดพิษ
 int player::skill_3poinson(){
     poinson = 1;
+    checkpoinson = true;
     return poinson; 
 }
 
@@ -474,7 +480,7 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
                 cout << "\t\t" << "Fail!!!!!";
             }
             else{
-                cout << "\t\t" << setw(2) << "Heal +" << heal;
+                cout << "\t" << setw(2) << "Heal +" << heal;
             }
         }
         if(skill1 == 2){
@@ -489,12 +495,20 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
     if(p1 == 6){
         p_1.swappokemon();
     }
-    if(p_2.poinson >= 1 && p_2.poinson <= 3){
-        double damage = p_2.takepoinson(0, p_1);
-        cout << "\t\tPoinson " << damage << " Damage";
+    //เช็กว่าติดพิษอยู่มั้ย 
+    if(p_1.poinson <= 4 && p_1.poinson >= 2){
+        double damage = p_1.takepoinson(0, p_2);
+        cout << "\t+Poinson " << damage << " Damage " << p_1.poinson-2 << "/3" ;
+    }
+    else if(p_1.poinson != 1){
+        p_2.poinson = 0;
+    }
+    //เช็กว่าสกิล 2 ตีไม่สน def ยังติดอยู่มั้ย
+    if(p_1.checkpiercing){
+        cout << "\tMusamasa " << p_1.muramasa << "/3"; 
     }
     else{
-        p_2.poinson = 0;
+        p_1.muramasa = 0;
     }
     if(p2 == 1){
         cout << "\t\t\t\tPlayer 2 Attack!!!!!";
@@ -557,12 +571,20 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
     if(p2 == 6){
         p_2.swappokemon();
     }
-    if(p_1.poinson >= 1 && p_1.poinson <= 3){
-        double damage = p_1.takepoinson(0, p_2);
-        cout << "\t\tPoinson " << damage << " Damage";
+    //เช็กว่าติดพิษอยู่มั้ย
+    if(p_2.poinson <= 4 && p_2.poinson >= 2){
+        double damage = p_2.takepoinson(0, p_1);
+        cout << "\t+Poinson " << damage << " Damage " << p_2.poinson-2 << "/3" ;
+    }
+    else if(p_2.poinson != 1){
+        p_2.poinson = 0;
+    }
+    //เช็กว่าสกิล 2 ตีไม่สน def ยังติดอยู่มั้ย
+    if(p_1.checkpiercing){
+        cout << "\tMusamasa " << p_1.muramasa << "/3"; 
     }
     else{
-        p_1.poinson = 0;
+        p_1.muramasa = 0;
     }
     if(checkdef1){
         p_1.undef(0);
@@ -570,6 +592,8 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
     if(checkdef2){
         p_2.undef(0);
     }
+    if(p_1.poinson == 1) p_1.poinson++;
+    if(p_2.poinson == 1) p_2.poinson++; 
         cout << endl;
 }
 
