@@ -106,7 +106,7 @@ void player::showPK(){
     for(int i = 1; i<3 ; i++){
         cout << "-------------------------" << endl;
         cout << "Name [" << i+1 << "] : " << myteam[i].namepokemon << endl; 
-        cout << "HP : " << myteam[i].hpmax << "/" << myteam[i].hp << endl;
+        cout << "HP : " << myteam[i].hp << "/" << myteam[i].hpmax << endl;
         cout << "DEF : " << myteam[i].def << endl;
         cout << "ATK : " << myteam[i].atk << endl;
         cout << "SPD : " << myteam[i].spd << endl;
@@ -167,13 +167,9 @@ void player::comswap(int n){
 double player::takeNormalATK(int n, player &opp, double winelement){
     double realoppdef = opp.myteam[n].def;
 
-    if(muramasa >= 1 && muramasa <= 3){
+    if(muramasa >= 2 && muramasa <= 4){
         muramasa++;
         realoppdef = 0;
-    }
-    if(muramasa > 3){
-        muramasa = 0;
-        checkpiercing = false;
     }
 
     double damage = (myteam[n].atk*winelement*(1-(realoppdef/100)));
@@ -186,13 +182,9 @@ double player::takeNormalATK(int n, player &opp, double winelement){
 double player::takeStrike(int n, player &opp, double winelement){
     double realoppdef = opp.myteam[n].def;
 
-    if(muramasa >= 1 && muramasa <= 3){
+    if(muramasa >= 2 && muramasa <= 4){
         muramasa++;
         realoppdef = 0;
-    }
-    if(muramasa > 3){
-        muramasa = 0;
-        checkpiercing = false;
     }
 
     double skATK = myteam[n].atk + (abs(opp.myteam[n].spd - myteam[n].spd)*10);
@@ -271,7 +263,7 @@ void player::comchoosepokemon() {
     set<int> selectedIndices; // ใช้ set ป้องกันค่าซ้ำ
     srand(time(0)); // ตั้งค่า seed สำหรับ rand()
 
-    cout << "Computer is selecting Pokémon...\n";
+    cout << "Computer is selecting Pokemon...\n";
     while (selectedIndices.size() < 3) {
         int randIndex = rand() % 6; // สุ่มค่า 0-5
         if (selectedIndices.insert(randIndex).second) { // ถ้าค่าไม่ซ้ำ ให้เพิ่ม
@@ -501,13 +493,13 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
         cout << "\t+Poinson " << damage << " Damage " << p_1.poinson-2 << "/3" ;
     }
     else if(p_1.poinson != 1){
-        p_2.poinson = 0;
+        p_1.poinson = 0;
     }
     //เช็กว่าสกิล 2 ตีไม่สน def ยังติดอยู่มั้ย
-    if(p_1.checkpiercing){
-        cout << "\tMusamasa " << p_1.muramasa << "/3"; 
+    if(p_1.muramasa <= 4 && p_1.muramasa >= 2){
+        cout << p_1.muramasa-2 << "/3" ;
     }
-    else{
+    else if(p_1.muramasa != 1){
         p_1.muramasa = 0;
     }
     if(p2 == 1){
@@ -580,11 +572,11 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
         p_2.poinson = 0;
     }
     //เช็กว่าสกิล 2 ตีไม่สน def ยังติดอยู่มั้ย
-    if(p_1.checkpiercing){
-        cout << "\tMusamasa " << p_1.muramasa << "/3"; 
+    if(p_2.muramasa <= 4 && p_2.muramasa >= 2){
+        cout << p_2.muramasa-2 << "/3" ;
     }
-    else{
-        p_1.muramasa = 0;
+    else if(p_2.muramasa != 1){
+        p_2.muramasa = 0;
     }
     if(checkdef1){
         p_1.undef(0);
@@ -592,9 +584,13 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
     if(checkdef2){
         p_2.undef(0);
     }
+    //เช็คว่าถูกกดสกิลไปแล้วหรือยัง
     if(p_1.poinson == 1) p_1.poinson++;
+    if(p_1.muramasa == 1) p_1.muramasa++;
     if(p_2.poinson == 1) p_2.poinson++; 
-        cout << endl;
+    if(p_2.muramasa == 1) p_2.muramasa++;
+
+    cout << endl;
 }
 
 void win(int p){
