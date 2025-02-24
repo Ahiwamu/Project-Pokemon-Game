@@ -87,7 +87,7 @@ class player
         bool isDead(int n);
         void showstat(int n, int who);
         double checkspd(int n);
-        void swappokemon();
+        void swappokemon(int n);
         void comswap(int n);
         void showPK();
 
@@ -116,9 +116,16 @@ void player::showPK(){
     }
 }
 
-void player::swappokemon() {
+void player::swappokemon(int n) {
     int order;
     
+    //แสดงว่าใครจะเปลี่ยนตัว
+    cout << endl << type << " : " << name << endl;
+    //เช็คว่ากดเปลี่ยนตัวหรือโปเกม่อนตาย ถ้าตายให้แสดงว่าตาย   
+    if(myteam[n].hp == 0){
+        cout << "Name : " << myteam[n].namepokemon << " is dead" << endl;
+    }
+
     while (true) { 
         showPK();
         cout << "Please select [2] or [3] : ";
@@ -167,8 +174,7 @@ void player::comswap(int n){
 double player::takeNormalATK(int n, player &opp, double winelement){
     double realoppdef = opp.myteam[n].def;
 
-    if(muramasa >= 2 && muramasa <= 4){
-        muramasa++;
+    if(checkpiercing == true){
         realoppdef = 0;
     }
 
@@ -182,8 +188,7 @@ double player::takeNormalATK(int n, player &opp, double winelement){
 double player::takeStrike(int n, player &opp, double winelement){
     double realoppdef = opp.myteam[n].def;
 
-    if(muramasa >= 2 && muramasa <= 4){
-        muramasa++;
+    if(checkpiercing == true){
         realoppdef = 0;
     }
 
@@ -247,9 +252,15 @@ void player::choosepokemon(int n) {
 }
 
 void player::createplayer(const string &n) {
-    cout << n << " : " << "PLEASE ENTER YOUR NAME : ";
-    cin.ignore();
-    getline(cin, name);
+    if(n == "Player 2" || n == "Player 1"){
+        cout << n << " : " << "PLEASE ENTER YOUR NAME : ";
+        cin.ignore();
+        getline(cin, name);
+    }
+    else{
+        name = "AI";
+    }
+    type = n;
 }
 
 
@@ -285,14 +296,17 @@ void player::comchoosepokemon() {
 }
 
 bool player::isDead(int n){
-    if(myteam[n].hp <= 0) return true;
+    if(myteam[n].hp <= 0){
+        myteam[n].hp = 0;
+        return true;
+    }
     else return false;
 }
 
 void player::showstat(int n, int who){
     if(who == 1){
         cout << "---------------------------------------------------------------------------------" << endl;
-        cout << "Player 1's name : " << nameplayer << endl;
+        cout << "Player 1's name : " << name << endl;
         cout << "Pokemon name : " << myteam[n].namepokemon << "\tElement : " << myteam[n].element << endl;
         cout << "HP : " << myteam[n].hp << "/" << myteam[n].hpmax << "\tATK : "<< myteam[n].atk << "\tDEF : "<< myteam[n].def << endl;
         cout << "SKILL : "  << myteam[n].skillinfo << endl;
@@ -300,7 +314,7 @@ void player::showstat(int n, int who){
     }
     else{
         cout << "\t\t\t\t\t\t---------------------------------------------------------------------------------" << endl; 
-		cout << "\t\t\t\t\t\tPlayer 2's name : " << nameplayer << endl; 
+		cout << "\t\t\t\t\t\tPlayer 2's name : " << name << endl; 
 		cout << "\t\t\t\t\t\tPokemon name : " << myteam[n].namepokemon << "\tElement : " << myteam[n].element << endl;
         cout << "\t\t\t\t\t\tHP : " << myteam[n].hp << "/" << myteam[n].hpmax << "\tATK : "<< myteam[n].atk << "\tDEF : "<< myteam[n].def << endl;
 		cout << "\t\t\t\t\t\tSKILL : "  << myteam[n].skillinfo << endl;
@@ -341,17 +355,17 @@ int player::checkskill(int n){
     return myteam[n].skill;
 }
 
-//skill heal 20-30 โอกาส 1/3 
+//skill heal 20-30 โอกาส 1/4 
 double player::skill_1heal(int n){
-    int randomheal = rand() % 11 + 20;
-    int randomchance = (rand() * 77) % 3;
+    double heal = 0.5 * myteam[n].hpmax;
+    int randomchance = (rand() * 77) % 4;
     if(randomchance == 0){
 
-        if(randomheal + myteam[n].hp > myteam[n].hpmax){
-            randomheal = myteam[n].hpmax - myteam[n].hp;
+        if(heal + myteam[n].hp > myteam[n].hpmax){
+            heal = myteam[n].hpmax - myteam[n].hp;
         }
-        myteam[n].hp += randomheal;
-        return randomheal;
+        myteam[n].hp += heal;
+        return heal;
     }
     else return 0.0;  
 }
@@ -372,7 +386,6 @@ int player::skill_3poinson(){
 
 //ทำติดพิษ
 double player::takepoinson(int n, player &opp){
-    poinson++;
     double poinsononhp = 0.15 * opp.myteam[n].hpmax;
     opp.myteam[n].hp -= poinsononhp;
     return poinsononhp;
@@ -391,7 +404,6 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
 
     bool dodge1 = p_1.checkdodge();
     bool dodge2 = p_2.checkdodge();
-
 
     if(elementplayer1 == 1){
         if(elementplayer2 == 2){
@@ -478,30 +490,41 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
         if(skill1 == 2){
             p_1.muramasa = p_1.skill_2muramasa();
             cout << "\t\t" << "Muramasa!!!!!";
+            goto p1_jumpskill2;
         }
         if(skill1 == 3){
             p_1.poinson = p_1.skill_3poinson();
             cout << "\t\t" << "Poinsoned!!!!!";
+            goto p1_jumpskill3;
         }
     }
     if(p1 == 6){
-        p_1.swappokemon();
+        p_1.swappokemon(0);
     }
     //เช็กว่าติดพิษอยู่มั้ย 
-    if(p_1.poinson <= 4 && p_1.poinson >= 2){
+    if(p_1.checkpoinson == true && p_1.poinson <= 3){
         double damage = p_1.takepoinson(0, p_2);
-        cout << "\t+Poinson " << damage << " Damage " << p_1.poinson-2 << "/3" ;
+        cout << "\t+Poinson " << damage << " Damage " << p_1.poinson << "/3" ;
+        p_1.poinson++;
     }
-    else if(p_1.poinson != 1){
+    else{
+        p_1.checkpoinson = false;
         p_1.poinson = 0;
     }
+
     //เช็กว่าสกิล 2 ตีไม่สน def ยังติดอยู่มั้ย
-    if(p_1.muramasa <= 4 && p_1.muramasa >= 2){
-        cout << p_1.muramasa-2 << "/3" ;
+    if(p_1.checkpiercing == true && p_1.muramasa <= 3){
+        cout << "\t" << p_1.muramasa << "/3" ;
+        p_1.muramasa++;
     }
-    else if(p_1.muramasa != 1){
+    else{
+        p_1.checkpiercing = false;
         p_1.muramasa = 0;
     }
+
+    p1_jumpskill2:
+    p1_jumpskill3:
+
     if(p2 == 1){
         cout << "\t\t\t\tPlayer 2 Attack!!!!!";
         if(!dodge1){
@@ -554,41 +577,47 @@ void drawscene(int p1, player &p_1, int p2, player &p_2){
         if(skill2 == 2){
             p_2.muramasa = p_2.skill_2muramasa();
             cout << "\t\t" << "Muramasa!!!!!";
+            goto p2_jumpskill2;
         }
         if(skill2 == 3){
             p_2.poinson = p_2.skill_3poinson();
             cout << "\t\t" << "Poinsoned!!!!!";
+            goto p2_jumpskill3;
         }
     }
     if(p2 == 6){
-        p_2.swappokemon();
+        p_2.swappokemon(0);
     }
-    //เช็กว่าติดพิษอยู่มั้ย
-    if(p_2.poinson <= 4 && p_2.poinson >= 2){
+    //เช็กว่าติดพิษอยู่มั้ย 
+    if(p_2.checkpoinson == true && p_2.poinson <= 3){
         double damage = p_2.takepoinson(0, p_1);
-        cout << "\t+Poinson " << damage << " Damage " << p_2.poinson-2 << "/3" ;
+        cout << "\t+Poinson " << damage << " Damage " << p_2.poinson << "/3" ;
+        p_2.poinson++;
     }
-    else if(p_2.poinson != 1){
+    else{
+        p_2.checkpoinson = false;
         p_2.poinson = 0;
     }
     //เช็กว่าสกิล 2 ตีไม่สน def ยังติดอยู่มั้ย
-    if(p_2.muramasa <= 4 && p_2.muramasa >= 2){
-        cout << p_2.muramasa-2 << "/3" ;
+    if(p_2.checkpiercing == true && p_2.muramasa <= 3){
+        cout << "\t" << p_2.muramasa << "/3" ;
+        p_2.muramasa++;
     }
-    else if(p_2.muramasa != 1){
+
+    else{
+        p_2.checkpiercing = false;
         p_2.muramasa = 0;
     }
+
+    p2_jumpskill2:
+    p2_jumpskill3:
+
     if(checkdef1){
         p_1.undef(0);
     }
     if(checkdef2){
         p_2.undef(0);
     }
-    //เช็คว่าถูกกดสกิลไปแล้วหรือยัง
-    if(p_1.poinson == 1) p_1.poinson++;
-    if(p_1.muramasa == 1) p_1.muramasa++;
-    if(p_2.poinson == 1) p_2.poinson++; 
-    if(p_2.muramasa == 1) p_2.muramasa++;
 
     cout << endl;
 }

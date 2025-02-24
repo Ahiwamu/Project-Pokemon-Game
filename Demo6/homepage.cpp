@@ -10,13 +10,14 @@ int main()
 
         player p1, p2;
       
-        p1.createplayer("p1");
+        p1.createplayer("Player 1");
         showpokemon();
         p1.choosepokemon(1);
         delaySeconds(0.5);
 
         if(toupper(who) == 'C'){
             int dead = 0;
+            p2.createplayer("Computer");
             p2.comchoosepokemon();
             while(true)
             {
@@ -42,7 +43,7 @@ int main()
                 int action1 = p1.playerAction;
                 delaySeconds(0.5);
                 p2.playerAction = randomnumber(4) + 1;
-                cout << "Player'2 Choice : " << p2.playerAction << endl;
+                cout << "Computer Choice : " << p2.playerAction << endl;
                 int action2 = p2.playerAction;
             
                 cout << "===========================================================================================================" << endl;
@@ -62,7 +63,7 @@ int main()
                             win(2);
                             break;
                         }else{
-                            p1.swappokemon();
+                            p1.swappokemon(0);
                             p2.comswap(dead);
                         }
                     }
@@ -71,7 +72,7 @@ int main()
                             win(1);
                             break;
                         }else{
-                            p1.swappokemon();
+                            p1.swappokemon(0);
                             p2.comswap(dead);
                         }
                     }else if(p1.checkspd(0) == p2.checkspd(0)){
@@ -89,7 +90,7 @@ int main()
                             win(1);
                             break;
                         }else{
-                            p1.swappokemon();
+                            p1.swappokemon(0);
                             p2.comswap(dead);
                         }
                 }
@@ -105,7 +106,7 @@ int main()
                     if(p1.isDead(0) && p1.isDead(1) && p1.isDead(2)){
                         win(2);
                         break;
-                    }else p1.swappokemon();
+                    }else p1.swappokemon(0);
                 }   
             
         }
@@ -113,7 +114,7 @@ int main()
             Return2Menu();
         
         }else if(toupper(who) == 'P'){
-            p2.createplayer("p2");
+            p2.createplayer("Player 2");
             showpokemon();
             p2.choosepokemon(2);
 
@@ -193,8 +194,8 @@ int main()
                             win(2);
                             break;
                         }else{
-                            p1.swappokemon();
-                            p2.swappokemon();
+                            p1.swappokemon(0);
+                            p2.swappokemon(0);
                         }
                     }
                     else if(p1.checkspd(0) > p2.checkspd(0)){
@@ -202,8 +203,8 @@ int main()
                             win(1);
                             break;
                         }else{
-                            p1.swappokemon();
-                            p2.swappokemon();
+                            p1.swappokemon(0);
+                            p2.swappokemon(0);
                         }
                     }else if(p1.checkspd(0) == p2.checkspd(0)){
                         if(p1.isDead(0) && p1.isDead(1) && p1.isDead(2) && p2.isDead(0) && p2.isDead(1) && p2.isDead(2)){
@@ -220,8 +221,8 @@ int main()
                             win(1);
                             break;
                         }else{
-                            p1.swappokemon();
-                            p2.swappokemon();
+                            p1.swappokemon(0);
+                            p2.swappokemon(0);
                         }
                 }
                 }
@@ -229,14 +230,14 @@ int main()
                     if(p2.isDead(0) && p2.isDead(1) && p2.isDead(2)){
                         win(1);
                         break;
-                    }else p2.swappokemon();
+                    }else p2.swappokemon(0);
                     
                 }
                 else if(p1.isDead(0)){
                     if(p1.isDead(0) && p1.isDead(1) && p1.isDead(2)){
                         win(2);
                         break;
-                    }else p1.swappokemon();
+                    }else p1.swappokemon(0);
                 }
             }
             delaySeconds(2);
