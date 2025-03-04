@@ -9,23 +9,17 @@
 #include<iomanip>
 #include <algorithm> // ใช้ ตรวจสอบค่าใน array
 #include <set>
+#include <conio.h>
 #include "charactor.h"
 
 using namespace std;
 
 void Page1();
 char Page2();
-void createwindowCom();
-void createwindowPlayer();
-void Page3(char ComOrPlayer);
-void createpokemon();
 
 int comChoice();
-void turnbase(int p1, int p2);
-void Pageturnbase(char who);
 void showpokemon();
 void delaySeconds(double seconds);
-void selectpokemon(char who);
 void win(int p);
 
 void player1_unit_stand(int n);
@@ -77,16 +71,14 @@ class player
 {
     string type;
     string name;
-    vector<string> skill;
     
     public:
         vector<pokemon> myteam;
         bool checkpiercing = false;
         bool checkpoinson = false;
         int muramasa = 0;
-        int poinson = 0;
-        string nameplayer;                //ชื่อ
-        int playerAction;
+        int poinson = 0;                
+        char playerAction;
         double takeNormalATK(int n, player &opp, double winelement);
         double takeStrike(int n, player &opp, double winelement);
         void def(int n);
@@ -264,8 +256,8 @@ void player::choosepokemon(int n) {
 void player::createplayer(const string &n) {
     if(n == "Player 2" || n == "Player 1"){
         cout << n << " : " << "PLEASE ENTER YOUR NAME : ";
-        cin.ignore();
-        getline(cin, name);
+        //cin.ignore();
+        cin >> name;
     }
     else{
         name = "AI";

@@ -38,7 +38,7 @@ int main()
                     cout << "[1] Attack [2] Strike [3] Defend [4] counter [5] skill [6] swap" << endl;
                     cout << "Player'1 Choice : ";
                     cin >> p1.playerAction;
-                    if (cin.fail() || p1.playerAction < 1 || p1.playerAction > 6) {
+                    if (cin.fail() || p1.playerAction - '0' < 1 || p1.playerAction - '0' > 6) {
                         cin.clear(); 
                         cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                         cout << "Invalid input. Please choose again." << endl;
@@ -47,9 +47,10 @@ int main()
                     }
                 
                 }
-                int action1 = p1.playerAction;
+                int action1 = p1.playerAction - '0';
                 delaySeconds(0.5);
 
+                int action2;
                 while(true){
                     
                     if(p2.myteam[0].sleep == true){
@@ -59,13 +60,12 @@ int main()
                         break;
                     }
                     
-                    p2.playerAction = randomnumber(4) + 1;
+                    action2 = randomnumber(4) + 1;
                     cout << "Computer Choice : " << p2.playerAction << endl;
                     break;
                     
                 }
                 
-                int action2 = p2.playerAction;
                 cout << "===========================================================================================================" << endl;
                 drawscene(action1, p1, action2, p2);
                 cout << "===========================================================================================================" << endl;
@@ -159,8 +159,9 @@ int main()
                     else{
                         cout << "[1] Attack [2] Strike [3] Defend [4] counter [5] skill [6] swap" << endl;
                         cout << "Player'1 Choice : ";
-                        cin >> p1.playerAction;
-                        if (cin.fail() || p1.playerAction < 1 || p1.playerAction > 6) {
+                        p1.playerAction = _getwch();
+                        cout << endl;
+                        if (cin.fail() || p1.playerAction - '0' < 1 || p1.playerAction - '0' > 6) {
                             cin.clear(); 
                             cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                             cout << "Invalid input. Please choose again." << endl;
@@ -169,8 +170,8 @@ int main()
                     }
 
                 }
-
-                int action1 = p1.playerAction;
+                
+                int action1 = p1.playerAction - '0';
                 
                 cout << "===========================================================================" << endl;
                 for(int i = 0; i < 3; i++) cout << endl;
@@ -188,8 +189,9 @@ int main()
                     else{
                         cout << "[1] Attack [2] Strike [3] Defend [4] counter [5] skill [6] swap" << endl;
                         cout << "Player'2 Choice : ";
-                        cin >> p2.playerAction;
-                        if (cin.fail() || p2.playerAction < 1 || p2.playerAction > 6) {
+                        p2.playerAction = _getwch();
+                        cout << endl;
+                        if (cin.fail() || p2.playerAction - '0' < 1 || p2.playerAction - '0' > 6) {
                             cin.clear(); 
                             cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
                             cout << "Invalid input. Please choose again." << endl;
@@ -199,7 +201,7 @@ int main()
 
                 }
 
-                int action2 = p2.playerAction;
+                int action2 = p2.playerAction - '0';
                 
                 cout << "===========================================================================================================" << endl;
                 drawscene(action1, p1, action2, p2);
